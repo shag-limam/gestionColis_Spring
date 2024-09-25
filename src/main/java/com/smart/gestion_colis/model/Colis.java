@@ -1,5 +1,7 @@
 //package com.smart.gestion_colis.model;
 //
+//import com.smart.gestion_colis.entities.Client;
+//import com.smart.gestion_colis.entities.Livreur;
 //import jakarta.persistence.*;
 //import java.util.Date;
 //

@@ -40,15 +40,15 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/listClient")
+    public ResponseEntity<List<Client>> allClients() {
+        List <Client> clients = userService.allClients();
 
-//    @PostMapping("/signupClient")
-//    public ResponseEntity<Client> createClient(@RequestBody RegisterClientDto registerClientDto) {
-//        Client registeredClient = userService.createClient(registerClientDto);
-//
-//        return ResponseEntity.ok(registeredClient);
-//    }
-  @PostMapping("/signupClient")
-  public ResponseEntity<Client> registerClient(
+        return ResponseEntity.ok(clients);
+    }
+
+    @PostMapping("/signupClient")
+    public ResponseEntity<Client> registerClient(
             @RequestPart("client") String registerClientDtoJson,
             @RequestPart("photo") MultipartFile photo) {
         try {
@@ -70,33 +70,62 @@ public class UserController {
             throw new RuntimeException("Failed to upload file", e); // Use RuntimeException for simplicity
         }
     }
+
+
     @PutMapping("/updateClient/{clientId}")
     public ResponseEntity<Client> updateClient(
             @PathVariable Long clientId,
             @RequestPart("client") String updateClientDtoJson,
             @RequestPart(value = "photo", required = false) MultipartFile photo) {
-             try {
-                // Convert JSON string to UpdateAdminDto object
-                 ObjectMapper objectMapper = new ObjectMapper();
-                  UpdateClientDto updateClientDto  = objectMapper.readValue(updateClientDtoJson, UpdateClientDto.class);
+        try {
+            System.out.println("Reçu JSON client : " + updateClientDtoJson);
 
-                // Optional: Process the photo if provided
-                ImageData imageData = null;
-                if (photo != null) {
-                    imageData = new ImageData();
-                    imageData.setName(photo.getOriginalFilename());
-                    imageData.setType(photo.getContentType());
-                    imageData.setImageData(photo.getBytes());
-                }
-
-                // Update Livreur using AuthenticationService
-                Client updatedClient = userService.updateClient(clientId, updateClientDto, imageData);
-
-                return ResponseEntity.ok(updatedClient);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to process request", e); // Handle exception appropriately
+            ObjectMapper objectMapper = new ObjectMapper();
+            UpdateClientDto updateClientDto;
+            try {
+                updateClientDto = objectMapper.readValue(updateClientDtoJson, UpdateClientDto.class);
+                System.out.println("Données du client converties avec succès.");
+            } catch (Exception e) {
+                System.err.println("Erreur de conversion du JSON : " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);  // Retourne 400 en cas d'erreur
             }
+
+            // Process the photo if provided
+            ImageData imageData = null;
+            if (photo != null) {
+                imageData = new ImageData();
+                imageData.setName(photo.getOriginalFilename());
+                imageData.setType(photo.getContentType());
+                imageData.setImageData(photo.getBytes());
+                System.out.println("Image traitée avec succès.");
+            }
+
+            Client updatedClient = userService.updateClient(clientId, updateClientDto, imageData);
+            return ResponseEntity.ok(updatedClient);
+
+        } catch (Exception e) {
+            System.err.println("Erreur inattendue lors de la mise à jour : " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);  // Retourne 500 en cas d'erreur serveur
         }
+    }
+
+
+    @PutMapping("/updateClientStatus/{clientId}")
+    public ResponseEntity<Client> updateClientStatus(@PathVariable Long clientId, @RequestBody UpdateClientDto updateClientDto) {
+        try {
+            Client updatedClient = userService.updateClientStatus(clientId, updateClientDto);
+            return ResponseEntity.ok(updatedClient);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);  // Retourne 404 si le client n'est pas trouvé
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);  // Retourne 500 en cas d'erreur serveur
+        }
+    }
+
+
+
+
     @DeleteMapping("/deleteClient/{clientId}")
     public ResponseEntity<String> deleteClient(@PathVariable Long clientId) {
         try {
@@ -108,6 +137,21 @@ public class UserController {
                     .body("Failed to delete client: " + e.getMessage());
         }
     }
+
+    @GetMapping("/{clientId}")
+    public ResponseEntity<Client> getClientById(@PathVariable Long clientId) {
+        try {
+            Client client = userService.findClientById(clientId);
+            if (client != null) {
+                return ResponseEntity.ok(client);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PostMapping("/signupAdmin")
     public ResponseEntity<Admin> registerAdmin(
             @RequestPart("admin") String registerAdminDtoJson,

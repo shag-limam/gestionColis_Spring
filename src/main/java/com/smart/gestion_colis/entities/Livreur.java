@@ -1,9 +1,6 @@
 package com.smart.gestion_colis.entities;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +27,11 @@ public class Livreur extends User {
 
     @Column(nullable = false)
     private String vehicle;
+
+    // The owning side of the relationship with Vehicule
+    @OneToOne
+    @JoinColumn(name = "vehicule_id", referencedColumnName = "id")
+    private Vehicule vehicule;  // This should match the 'mappedBy' in Vehicule
 
     public String getAddress() {
         return address;

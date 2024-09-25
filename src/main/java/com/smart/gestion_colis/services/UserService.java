@@ -2,6 +2,7 @@ package com.smart.gestion_colis.services;
 
 import com.smart.gestion_colis.dtos.*;
 import com.smart.gestion_colis.entities.*;
+import com.smart.gestion_colis.repositories.ClientRepository;
 import com.smart.gestion_colis.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -18,15 +19,32 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository,PasswordEncoder passwordEncoder) {
+    private final ClientRepository clientRepository;
+
+    public UserService(UserRepository userRepository,PasswordEncoder passwordEncoder,ClientRepository clientRepository ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.clientRepository=clientRepository;
+
     }
 
     public List<User> allUsers() {
         List<User> users = new ArrayList<>();
         userRepository.findAll().forEach(users::add);
         return users;
+    }
+
+    public List<Client> allClients() {
+        List<Client> client = new ArrayList<>();
+        clientRepository.findAll().forEach(client::add);
+        return client;
+    }
+
+
+
+    public Client findClientById(Long id) {
+        return clientRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
     }
 
 
@@ -67,6 +85,7 @@ public class UserService {
         return userRepository.save(client);
     }
 
+
     public Client updateClient(Long clientId, UpdateClientDto input, ImageData imageData) {
         // Retrieve existing Client entity from the database
         Client client = (Client) userRepository.findById(clientId)
@@ -97,6 +116,20 @@ public class UserService {
         // Save the updated Livreur entity back to the repository
         return userRepository.save(client);
     }
+
+
+    public Client updateClientStatus(Long clientId,UpdateClientDto j) {
+        Client client = (Client) userRepository.findById(clientId)
+                .orElseThrow(() -> new RuntimeException("Client not found with id: " + clientId));
+
+        // Met à jour le statut actif du client
+        client.setActive(j.getActive());
+
+
+        // Sauvegarde les modifications
+        return userRepository.save(client);
+    }
+
 
     public void deleteClient(Long clientId) {
         // Vérifier si le livreur existe avant de le supprimer

@@ -57,7 +57,7 @@ public class RegisterClientDto {
 
     @Override
     public String toString() {
-        return "RegisterLivreurDto{" +
+        return "RegisterClientDto{" +
                 "email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", fullName='" + fullName + '\'' +

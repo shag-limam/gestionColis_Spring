@@ -1,5 +1,7 @@
 package com.smart.gestion_colis.dtos;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UpdateClientDto {
     private String email;
     private String password;
