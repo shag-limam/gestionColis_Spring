@@ -1,5 +1,6 @@
 package com.smart.gestion_colis.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,10 +26,10 @@ public class Livreur extends User {
     @Column(nullable = false)
     private String licence;
 
-    @Column(nullable = false)
-    private String vehicle;
+
 
     // The owning side of the relationship with Vehicule
+    @JsonManagedReference  // Propriétaire de la relation
     @OneToOne
     @JoinColumn(name = "vehicule_id", referencedColumnName = "id")
     private Vehicule vehicule;  // This should match the 'mappedBy' in Vehicule
@@ -56,13 +57,6 @@ public class Livreur extends User {
         this.licence = licence;
         return this;
     }
-    public String getVehicle() {
-        return vehicle;
-    }
 
-    public Livreur setVehicle(String vehicle) {
-        this.vehicle = vehicle;
-        return this;
-    }
 
 }

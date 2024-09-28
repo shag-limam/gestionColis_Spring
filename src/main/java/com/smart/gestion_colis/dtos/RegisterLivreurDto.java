@@ -4,20 +4,10 @@ public class RegisterLivreurDto {
     private String email;
     private String password;
     private String fullName;
-    private String vehicle;
     private String licence;
     private String address;
     private String phoneNumber;
 
-
-    public String getVehicle() {
-        return vehicle;
-    }
-
-    public RegisterLivreurDto setVehicle(String vehicle) {
-        this.vehicle = vehicle;
-        return this;
-    }
 
     public String getLicence() {
         return licence;
@@ -85,7 +75,6 @@ public class RegisterLivreurDto {
                 "email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", fullName='" + fullName + '\'' +
-                ", vehicle='" + vehicle + '\'' +
                 ", licence='" + licence + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", address='" + address + '\'' +

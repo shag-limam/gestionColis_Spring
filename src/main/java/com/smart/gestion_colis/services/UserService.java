@@ -185,4 +185,62 @@ public class UserService {
         // Supprimer le livreur de la base de données
         userRepository.delete(admin);
     }
+
+    public Livreur signupLivreur(RegisterLivreurDto input, ImageData imageData) {
+        var livreur = new Livreur();
+
+        livreur.setFullName(input.getFullName());
+        livreur.setEmail(input.getEmail());
+        livreur.setLicence(input.getLicence());
+        livreur.setAddress(input.getAddress());
+        livreur.setPhoneNumber(input.getPhoneNumber());
+        livreur.setPassword(passwordEncoder.encode(input.getPassword()));
+        livreur.setImageData(imageData);
+        livreur.setActive(true);
+
+        return userRepository.save(livreur);
+    }
+
+    public void deleteLivreur(Long livreurId) {
+        // Vérifier si le livreur existe avant de le supprimer
+        Livreur livreur = (Livreur) userRepository.findById(livreurId)
+                .orElseThrow(() -> new RuntimeException("Livreur not found with id: " + livreurId));
+
+        // Supprimer le livreur de la base de données
+        userRepository.delete(livreur);
+    }
+
+    public Livreur updateLivreur(Long livreurId, UpdateLivreurDto input, ImageData imageData) {
+        // Retrieve existing Livreur entity from the database
+        Livreur livreur = (Livreur) userRepository.findById(livreurId)
+                .orElseThrow(() -> new RuntimeException("Livreur not found with id: " + livreurId));
+
+        // Update the Livreur entity with new data
+        if (input.getFullName() != null) {
+            livreur.setFullName(input.getFullName());
+        }if (input.getActive() != null) {
+            livreur.setActive(input.getActive());
+        }
+        if (input.getEmail() != null) {
+            livreur.setEmail(input.getEmail());
+        }
+        if (input.getLicence() != null) {
+            livreur.setLicence(input.getLicence());
+        }
+        if (input.getAddress() != null) {
+            livreur.setAddress(input.getAddress());
+        }
+        if (input.getPhoneNumber() != null) {
+            livreur.setPhoneNumber(input.getPhoneNumber());
+        }
+        if (input.getPassword() != null) {
+            livreur.setPassword(passwordEncoder.encode(input.getPassword()));
+        }
+        if (imageData != null) {
+            livreur.setImageData(imageData);
+        }
+
+        // Save the updated Livreur entity back to the repository
+        return userRepository.save(livreur);
+    }
 }

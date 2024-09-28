@@ -37,10 +37,10 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/users/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/livreur/**").hasRole("LIVREUR")
-                        .requestMatchers("/client/**").hasRole("CLIENT")
+                        .requestMatchers("/api/users/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/livreur/**").hasRole("LIVREUR")
+                        .requestMatchers("/api/client/**").hasRole("CLIENT")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
