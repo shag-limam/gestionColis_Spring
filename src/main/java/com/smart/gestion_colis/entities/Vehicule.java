@@ -34,7 +34,7 @@ public class Vehicule {
     private Boolean rejected = false;  // Par défaut, non rejeté
 
     // Relation bidirectionnelle avec Livreur
-    @JsonBackReference  // Côté inverse de la relation
+    @JsonBackReference  // Empêche la sérialisation du côté inverse
     @OneToOne(mappedBy = "vehicule")
     private Livreur livreur;  // Référence au livreur qui possède ce véhicule
 
@@ -42,6 +42,10 @@ public class Vehicule {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "geolocalisation_id", referencedColumnName = "id")
     private Geolocalisation geolocalisation;
+
+    // Relation avec Motif
+    @OneToOne(mappedBy = "vehicule", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Motif motif;// Motif du refus, si le véhicule est rejeté
 
     // Getters and Setters
 
@@ -99,6 +103,14 @@ public class Vehicule {
 
     public void setLivreur(Livreur livreur) {
         this.livreur = livreur;
+    }
+
+    public Motif getMotif() {
+        return motif;
+    }
+
+    public void setMotif(Motif motif) {
+        this.motif = motif;
     }
 
     public Geolocalisation getGeolocalisation() {

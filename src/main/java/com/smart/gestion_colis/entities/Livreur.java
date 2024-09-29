@@ -29,7 +29,7 @@ public class Livreur extends User {
 
 
     // The owning side of the relationship with Vehicule
-    @JsonManagedReference  // Propriétaire de la relation
+    @JsonManagedReference  // Gère la relation du côté propriétaire
     @OneToOne
     @JoinColumn(name = "vehicule_id", referencedColumnName = "id")
     private Vehicule vehicule;  // This should match the 'mappedBy' in Vehicule

@@ -1,13 +1,13 @@
 package com.smart.gestion_colis.controllers;
 
 import com.smart.gestion_colis.dtos.VehiculeDto;
-import com.smart.gestion_colis.entities.Client;
 import com.smart.gestion_colis.entities.Vehicule;
 import com.smart.gestion_colis.services.VehiculeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.List;
 
 @RestController
@@ -37,18 +37,27 @@ public class VehiculeController {
         return ResponseEntity.ok(approvedVehicule);
     }
 
-    // Rejeter un véhicule
+    // Rejeter un véhicule avec un motif
     @PutMapping("/admin/reject/{vehiculeId}")
-    public ResponseEntity<Vehicule> rejectVehicule(@PathVariable Long vehiculeId) {
-        Vehicule rejectedVehicule = vehiculeService.rejectVehicule(vehiculeId);
+    public ResponseEntity<Vehicule> rejectVehicule(
+            @PathVariable Long vehiculeId,
+            @RequestBody Map<String, String> motif) {
+
+        // Récupérer la description du motif du corps de la requête
+        String motifDescription = motif.get("motifDescription");
+
+        if (motifDescription == null || motifDescription.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        Vehicule rejectedVehicule = vehiculeService.rejectVehicule(vehiculeId, motifDescription);
         return ResponseEntity.ok(rejectedVehicule);
     }
 
-    // Récupérer tous les véhicules
+    // Récupérer tous les véhicules pour l'admin
     @GetMapping("/admin/list")
     public ResponseEntity<List<Vehicule>> getAllVehicules() {
         List<Vehicule> vehicules = vehiculeService.getAllVehicules();
         return ResponseEntity.ok(vehicules);
     }
-
 }
