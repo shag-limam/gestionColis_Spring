@@ -1,8 +1,10 @@
 package com.smart.gestion_colis.controllers;
 
-import com.smart.gestion_colis.dtos.LivraisonDto;
+import com.smart.gestion_colis.dtos.ItineraireDto;
 import com.smart.gestion_colis.entities.Livraison;
 import com.smart.gestion_colis.services.LivraisonService;
+import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,36 +20,35 @@ public class LivraisonController {
         this.livraisonService = livraisonService;
     }
 
-    @GetMapping
-    public List<Livraison> getAllLivraisons() {
-        return livraisonService.getAllLivraisons();
+    // Créer une nouvelle Livraison avec un nouvel Itinéraire
+    @PostMapping("/create")
+    public ResponseEntity<Livraison> createLivraison(
+            @RequestParam Integer colisId,
+            @RequestParam Integer livreurId,
+            @RequestBody ItineraireDto itineraireDto) {
+        Livraison livraison = livraisonService.createLivraison(colisId, livreurId, itineraireDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(livraison);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Livraison> getLivraisonById(@PathVariable Long id) {
-        Livraison livraison = livraisonService.getLivraisonById(id);
-        if (livraison != null) {
-            return ResponseEntity.ok(livraison);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    // Mettre à jour le statut de la Livraison
+    @PutMapping("/updateStatus/{livraisonId}")
+    public ResponseEntity<Livraison> updateLivraisonStatus(@PathVariable Integer livraisonId, @RequestParam String statut) {
+        Livraison updatedLivraison = livraisonService.updateLivraisonStatut(livraisonId, statut);
+        return ResponseEntity.ok(updatedLivraison);
     }
 
-    @PostMapping
-    public ResponseEntity<Livraison> createLivraison(@RequestBody LivraisonDto livraisonDto) {
-        Livraison livraison = livraisonService.createLivraison(livraisonDto);
+    // Récupérer toutes les Livraisons
+    @GetMapping("/list")
+    @Transactional
+    public ResponseEntity<List<Livraison>> getAllLivraisons() {
+        return ResponseEntity.ok(livraisonService.getAllLivraisons());
+    }
+
+    // Récupérer une Livraison par son ID
+    @GetMapping("/{livraisonId}")
+    @Transactional
+    public ResponseEntity<Livraison> getLivraisonById(@PathVariable Integer livraisonId) {
+        Livraison livraison = livraisonService.getLivraisonById(livraisonId);
         return ResponseEntity.ok(livraison);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Livraison> updateLivraison(@PathVariable Long id, @RequestBody LivraisonDto livraisonDto) {
-        Livraison livraison = livraisonService.updateLivraison(id, livraisonDto);
-        return ResponseEntity.ok(livraison);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLivraison(@PathVariable Integer id) {
-        livraisonService.deleteLivraison(id);
-        return ResponseEntity.noContent().build();
     }
 }

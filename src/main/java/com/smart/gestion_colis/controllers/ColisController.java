@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/colis")
@@ -20,61 +21,78 @@ public class ColisController {
     @Autowired
     private ColisService colisService;
 
-//    @PostMapping("/createColis")
-//    public ResponseEntity<Colis> createColis(
-//            @RequestPart("colis") String colisDtoJson,
-//            @RequestPart(value = "image", required = false) MultipartFile image) {
-//        try {
-//            // Convertir le JSON string en ColisDto
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            ColisDto colisDto = objectMapper.readValue(colisDtoJson, ColisDto.class);
-//
-//            // Si une image est fournie, la traiter
-//            ImageData imageData = null;
-//            if (image != null) {
-//                imageData = new ImageData();
-//                imageData.setName(image.getOriginalFilename());
-//                imageData.setType(image.getContentType());
-//                imageData.setImageData(image.getBytes());
-//            }
-//
-//            // Appel au service pour créer le colis
-//            Colis createdColis = colisService.createColis(colisDto, imageData);
-//
-//            return ResponseEntity.status(HttpStatus.CREATED).body(createdColis);
-//        } catch (IOException e) {
-//            throw new RuntimeException("Failed to create colis", e);
-//        }
-//    }
-@PostMapping("/createColis")
-public ResponseEntity<Colis> createColis(
-    @RequestPart("colis") String colisDtoJson,
-    @RequestPart("image") MultipartFile image) {
-    try {
-        // Convertir JSON string en ColisDto
-        ObjectMapper objectMapper = new ObjectMapper();
-        ColisDto colisDto = objectMapper.readValue(colisDtoJson, ColisDto.class);
+    // Créer un nouveau Colis
+    @PostMapping("/createColis")
+    public ResponseEntity<Colis> createColis(
+            @RequestPart("colis") String colisDtoJson,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            ColisDto colisDto = objectMapper.readValue(colisDtoJson, ColisDto.class);
 
-        // Traiter le fichier associé (facultatif)
-        ImageData imageData = null;
-        if (image != null) {
-            imageData = new ImageData();
-            imageData.setName(image.getOriginalFilename());
-            imageData.setType(image.getContentType());
-            imageData.setImageData(image.getBytes());
+            ImageData imageData = null;
+            if (image != null) {
+                imageData = new ImageData();
+                imageData.setName(image.getOriginalFilename());
+                imageData.setType(image.getContentType());
+                imageData.setImageData(image.getBytes());
+            }
+
+            Colis createdColis = colisService.createColis(colisDto, imageData);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdColis);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create colis", e);
         }
-
-        // Appel au service pour créer le colis
-        Colis createdColis = colisService.createColis(colisDto, imageData);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdColis);
-    } catch (IOException e) {
-        // Gestion d'erreur
-        throw new RuntimeException("Failed to create colis", e);
     }
-}
 
+    // Mettre à jour un Colis existant
+    @PutMapping("/updateColis/{colisId}")
+    public ResponseEntity<Colis> updateColis(
+            @PathVariable Long colisId,
+            @RequestPart("colis") String colisDtoJson,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            ColisDto colisDto = objectMapper.readValue(colisDtoJson, ColisDto.class);
 
+            ImageData imageData = null;
+            if (image != null) {
+                imageData = new ImageData();
+                imageData.setName(image.getOriginalFilename());
+                imageData.setType(image.getContentType());
+                imageData.setImageData(image.getBytes());
+            }
 
+            Colis updatedColis = colisService.updateColis(colisId, colisDto, imageData);
+            return ResponseEntity.ok(updatedColis);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to update colis", e);
+        }
+    }
 
+    // Supprimer un Colis par son ID
+    @DeleteMapping("/deleteColis/{colisId}")
+    public ResponseEntity<String> deleteColis(@PathVariable Long colisId) {
+        try {
+            colisService.deleteColis(colisId);
+            return ResponseEntity.ok("Colis with ID " + colisId + " has been deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to delete colis: " + e.getMessage());
+        }
+    }
+
+    // Lister tous les Colis
+    @GetMapping("/list")
+    public ResponseEntity<List<Colis>> getAllColis() {
+        List<Colis> colisList = colisService.getAllColis();
+        return ResponseEntity.ok(colisList);
+    }
+
+    // Récupérer un Colis par son ID
+    @GetMapping("/{colisId}")
+    public ResponseEntity<Colis> getColisById(@PathVariable Long colisId) {
+        Colis colis = colisService.getColisById(colisId);
+        return ResponseEntity.ok(colis);
+    }
 }

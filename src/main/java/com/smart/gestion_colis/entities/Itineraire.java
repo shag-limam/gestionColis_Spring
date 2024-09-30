@@ -1,5 +1,7 @@
 package com.smart.gestion_colis.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,12 +29,13 @@ public class Itineraire {
     @ElementCollection
     @CollectionTable(name = "waypoints", joinColumns = @JoinColumn(name = "itineraire_id"))
     @Column(name = "waypoint")
+    @JsonIgnore  // Ignore les waypoints pendant la sérialisation JSON pour éviter les erreurs de lazy loading
     private List<String> waypoints;
 
-    // Relation avec Colis
+    // Relation avec Livraisons
     @OneToOne(mappedBy = "itineraire", cascade = CascadeType.ALL)
-    private Colis colis;
-
+    @JsonBackReference
+    private Livraison livraison;
     // Méthodes personnalisées
 
     // Obtenir l'identifiant de l'itinéraire
@@ -91,14 +94,14 @@ public class Itineraire {
         return this;
     }
 
-    // Obtenir le colis associé
-    public Colis getColis() {
-        return colis;
+    // Obtenir la livraison associée
+    public Livraison getLivraison() {
+        return livraison;
     }
 
-    // Définir le colis associé
-    public Itineraire setColis(Colis colis) {
-        this.colis = colis;
+    // Définir la livraison associée
+    public Itineraire setLivraison(Livraison livraison) {
+        this.livraison = livraison;
         return this;
     }
 }

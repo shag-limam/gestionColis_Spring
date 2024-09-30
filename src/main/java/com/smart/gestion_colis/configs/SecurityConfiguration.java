@@ -37,6 +37,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/livreur/**").hasRole("LIVREUR")
@@ -62,3 +63,28 @@ public class SecurityConfiguration {
         return source;
     }
 }
+//package com.smart.gestion_colis.configs;
+//
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+//import org.springframework.security.web.SecurityFilterChain;
+//
+//@Configuration
+//@EnableWebSecurity
+//public class SecurityConfiguration {
+//
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(csrf -> csrf.disable())
+//                .authorizeHttpRequests(auth -> auth
+//                        .anyRequest().permitAll() // Permet toutes les requêtes sans authentification
+//                )
+//                .httpBasic(httpBasic -> httpBasic.disable()) // Désactive l'authentification HTTP basique
+//                .formLogin(formLogin -> formLogin.disable()); // Désactive le formulaire de connexion
+//
+//        return http.build();
+//    }
+//}

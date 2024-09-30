@@ -1,5 +1,6 @@
 package com.smart.gestion_colis.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,8 +16,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Colis {
-
-    // Attributs
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,20 +47,16 @@ public class Colis {
     @Column(nullable = false)
     private Date dateLivraisonPrevue;
 
-    // Associations avec les autres entités
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "itineraire_id", referencedColumnName = "id")
-    private Itineraire itineraire;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "livraison_id", referencedColumnName = "id")
-    private Livraison livraison;
-
     // Association avec l'entité Client
     @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)  // Chaque colis appartient à un client
+    @JoinColumn(name = "client_id", nullable = false)
     private Client client;
+
+    // Association avec Livraison
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "livraison_id", referencedColumnName = "id")
+    @JsonManagedReference // Point de départ de la sérialisation pour la livraison
+    private Livraison livraison;
 
     // Méthodes supplémentaires (Getters, Setters générés par Lombok)
 
@@ -136,14 +131,6 @@ public class Colis {
         return this;
     }
 
-    public Itineraire getItineraire() {
-        return itineraire;
-    }
-
-    public Colis setItineraire(Itineraire itineraire) {
-        this.itineraire = itineraire;
-        return this;
-    }
 
     public Livraison getLivraison() {
         return livraison;
@@ -173,7 +160,6 @@ public class Colis {
                 ", adresseDestinataire='" + adresseDestinataire + '\'' +
                 ", dateExpedition=" + dateExpedition +
                 ", dateLivraisonPrevue=" + dateLivraisonPrevue +
-                ", itineraire=" + (itineraire != null ? itineraire.getId() : "null") +
                 ", livraison=" + (livraison != null ? livraison.getId() : "null") +
                 ", client=" + (client != null ? client.getId() : "null") + // Affiche l'ID du client
                 ", imageData=" + (imageData != null ? imageData.getName() : "null") +

@@ -1,5 +1,7 @@
 package com.smart.gestion_colis.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,11 +31,18 @@ public class Livraison {
     private String statut; // Ex : "En cours", "Livré", "Annulé"
 
     @ManyToOne
-    @JoinColumn(name = "livreur_id")
+    @JoinColumn(name = "livreur_id", nullable = false)  // Une livraison est toujours liée à un livreur
+    @JsonBackReference // Empêche la récursivité infinie en sérialisant la livraison vers le livreur
     private Livreur livreur;
 
     @OneToOne(mappedBy = "livraison")
+    @JsonBackReference // Empêche la récursivité infinie en sérialisant le colis vers la livraison
     private Colis colis;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "itineraire_id", referencedColumnName = "id", nullable = false)
+    @JsonManagedReference // Point de départ de la sérialisation pour l'itinéraire
+    private Itineraire itineraire;
 
     // Méthode pour vérifier si la livraison est livrée
     public boolean estLivree() {
@@ -67,8 +76,9 @@ public class Livraison {
                 "id=" + id +
                 ", dateLivraisonReelle=" + dateLivraisonReelle +
                 ", statut='" + statut + '\'' +
-                ", livreur=" + livreur.getFullName() + // Suppose que Livreur a un attribut 'nom'
-                ", colis=" + colis.getId() + // Suppose que Colis a un attribut 'id'
+                ", livreur=" + (livreur != null ? livreur.getFullName() : "null") +
+                ", colis=" + (colis != null ? colis.getId() : "null") +
+                ", itineraire=" + (itineraire != null ? itineraire.getId() : "null") +
                 '}';
     }
 }
