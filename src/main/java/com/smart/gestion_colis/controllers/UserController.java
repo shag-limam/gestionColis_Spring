@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-
 @RequestMapping("api/users")
 @RestController
 public class UserController {
@@ -46,6 +45,7 @@ public class UserController {
 
         return ResponseEntity.ok(clients);
     }
+
 
     @PostMapping("/signupClient")
     public ResponseEntity<Client> registerClient(
@@ -138,7 +138,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{clientId}")
+    @GetMapping("/listC/{clientId}")
     public ResponseEntity<Client> getClientById(@PathVariable Long clientId) {
         try {
             Client client = userService.findClientById(clientId);
@@ -216,29 +216,58 @@ public class UserController {
     }
 
 
+//    @PostMapping("/signupLivreur")
+//    public ResponseEntity<Livreur> registerLivreur(
+//            @RequestPart("livreur") String registerLivreurDtoJson,
+//            @RequestPart("photo") MultipartFile photo) {
+//        try {
+//            // Convert JSON string to RegisterLivreurDto object
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            RegisterLivreurDto registerLivreurDto = objectMapper.readValue(registerLivreurDtoJson, RegisterLivreurDto.class);
+//
+//            // Process the photo
+//            ImageData imageData = new ImageData();
+//            imageData.setName(photo.getOriginalFilename());
+//            imageData.setType(photo.getContentType());
+//            imageData.setImageData(photo.getBytes());
+//
+//            // Register Livreur
+//            Livreur registeredLivreur = userService.signupLivreur(registerLivreurDto, imageData);
+//
+//            return ResponseEntity.ok(registeredLivreur);
+//        } catch (IOException e) {
+//            throw new RuntimeException("Failed to upload file", e); // Use RuntimeException for simplicity
+//        }
+//    }
+
     @PostMapping("/signupLivreur")
     public ResponseEntity<Livreur> registerLivreur(
             @RequestPart("livreur") String registerLivreurDtoJson,
             @RequestPart("photo") MultipartFile photo) {
         try {
-            // Convert JSON string to RegisterLivreurDto object
+            // Convertir le JSON en objet DTO
             ObjectMapper objectMapper = new ObjectMapper();
             RegisterLivreurDto registerLivreurDto = objectMapper.readValue(registerLivreurDtoJson, RegisterLivreurDto.class);
 
-            // Process the photo
+            // Traiter la photo
             ImageData imageData = new ImageData();
             imageData.setName(photo.getOriginalFilename());
             imageData.setType(photo.getContentType());
             imageData.setImageData(photo.getBytes());
 
-            // Register Livreur
+            // Enregistrer le livreur
             Livreur registeredLivreur = userService.signupLivreur(registerLivreurDto, imageData);
 
             return ResponseEntity.ok(registeredLivreur);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to upload file", e); // Use RuntimeException for simplicity
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null); // Si le JSON est mal formé ou le fichier corrompu
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null); // Erreur générique du serveur
         }
     }
+
 
     @DeleteMapping("/deleteLivreur/{livreurId}")
     public ResponseEntity<String> deleteLivreur(@PathVariable Long livreurId) {
@@ -249,6 +278,28 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to delete livreur: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/listLivreur")
+    public ResponseEntity<List<Livreur>> allLivreurs() {
+        List <Livreur> livreurs = userService.allLivreurs();
+        return ResponseEntity.ok(livreurs);
+    }
+
+
+
+    @GetMapping("/listL/{livreurId}")
+    public ResponseEntity<Livreur> getLivreurById(@PathVariable Integer livreurId) {
+        try {
+            Livreur livreur = userService.findLivreurById(livreurId);
+            if (livreur != null) {
+                return ResponseEntity.ok(livreur);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -277,6 +328,18 @@ public class UserController {
             return ResponseEntity.ok(updatedLivreur);
         } catch (IOException e) {
             throw new RuntimeException("Failed to process request", e); // Handle exception appropriately
+        }
+    }
+
+    @PutMapping("/updateLivreurStatus/{livreurId}")
+    public ResponseEntity<Livreur> updateLivreurStatus(@PathVariable Long livreurId, @RequestBody UpdateLivreurDto updateLivreurDto) {
+        try {
+            Livreur updatedLivreur = userService.updateLivreurStatus(livreurId, updateLivreurDto);
+            return ResponseEntity.ok(updatedLivreur);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);  // Retourne 404 si le client n'est pas trouvé
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);  // Retourne 500 en cas d'erreur serveur
         }
     }
 }

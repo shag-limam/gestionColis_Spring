@@ -48,7 +48,7 @@ public class ColisController {
     // Mettre à jour un Colis existant
     @PutMapping("/updateColis/{colisId}")
     public ResponseEntity<Colis> updateColis(
-            @PathVariable Long colisId,
+            @PathVariable Integer colisId,
             @RequestPart("colis") String colisDtoJson,
             @RequestPart(value = "image", required = false) MultipartFile image) {
         try {
@@ -72,7 +72,7 @@ public class ColisController {
 
     // Supprimer un Colis par son ID
     @DeleteMapping("/deleteColis/{colisId}")
-    public ResponseEntity<String> deleteColis(@PathVariable Long colisId) {
+    public ResponseEntity<String> deleteColis(@PathVariable Integer colisId) {
         try {
             colisService.deleteColis(colisId);
             return ResponseEntity.ok("Colis with ID " + colisId + " has been deleted successfully.");
@@ -91,8 +91,15 @@ public class ColisController {
 
     // Récupérer un Colis par son ID
     @GetMapping("/{colisId}")
-    public ResponseEntity<Colis> getColisById(@PathVariable Long colisId) {
+    public ResponseEntity<Colis> getColisById(@PathVariable Integer colisId) {
         Colis colis = colisService.getColisById(colisId);
         return ResponseEntity.ok(colis);
+    }
+
+    // Ajouter un endpoint pour récupérer les colis disponibles
+    @GetMapping("/disponibles")
+    public ResponseEntity<List<Colis>> getColisDisponibles() {
+        List<Colis> colisDisponibles = colisService.getColisDisponibles();
+        return ResponseEntity.ok(colisDisponibles);
     }
 }

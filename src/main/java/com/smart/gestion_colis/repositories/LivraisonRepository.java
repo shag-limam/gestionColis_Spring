@@ -11,4 +11,5 @@ public interface LivraisonRepository extends CrudRepository<Livraison, Integer> 
 
     Optional<Livraison> findById(Long id);
     public List<Livraison> findAll();
+    List<Livraison> findByColis(Colis colis);
 }

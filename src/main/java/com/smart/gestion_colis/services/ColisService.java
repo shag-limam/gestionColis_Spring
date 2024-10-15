@@ -57,7 +57,7 @@ public class ColisService {
 
     //Mettre à jour un Colis existant
     @Transactional
-    public Colis updateColis(Long colisId, ColisDto colisDto, ImageData imageData) {
+    public Colis updateColis(Integer colisId, ColisDto colisDto, ImageData imageData) {
         Colis colis = colisRepository.findById(colisId)
                 .orElseThrow(() -> new RuntimeException("Colis not found with id: " + colisId));
 
@@ -77,7 +77,7 @@ public class ColisService {
     }
 
     //Supprimer un Colis par son ID
-    public void deleteColis(Long colisId) {
+    public void deleteColis(Integer colisId) {
         Colis colis = colisRepository.findById(colisId)
                 .orElseThrow(() -> new RuntimeException("Colis not found with id: " + colisId));
         colisRepository.delete(colis);
@@ -89,8 +89,13 @@ public class ColisService {
     }
 
     //Récupérer un Colis par son ID
-    public Colis getColisById(Long colisId) {
+    public Colis getColisById(Integer colisId) {
         return colisRepository.findById(colisId)
                 .orElseThrow(() -> new RuntimeException("Colis not found with id: " + colisId));
+    }
+
+    // Ajouter une méthode pour récupérer les colis disponibles (sans livraison)
+    public List<Colis> getColisDisponibles() {
+        return colisRepository.findByLivraisonIsNull();
     }
 }

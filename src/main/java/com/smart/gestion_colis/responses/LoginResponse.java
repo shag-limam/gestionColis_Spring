@@ -1,11 +1,20 @@
 package com.smart.gestion_colis.responses;
 
 public class LoginResponse {
+    private long id;
     private String token;
     private long expiresIn;
     private String userType;
 //    private Object userData;
 
+    public long getId() {
+        return id;
+    }
+
+    public LoginResponse setId(long id) {
+        this.id = id;
+        return this;
+    }
     public String getToken() {
         return token;
     }
@@ -45,6 +54,7 @@ public class LoginResponse {
     @Override
     public String toString() {
         return "LoginResponse{" +
+                "id='" + id + '\'' +
                 "token='" + token + '\'' +
                 ", expiresIn=" + expiresIn +
                 ", userType='" + userType + '\'' +

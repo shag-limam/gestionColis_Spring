@@ -3,6 +3,7 @@ package com.smart.gestion_colis.services;
 import com.smart.gestion_colis.dtos.*;
 import com.smart.gestion_colis.entities.*;
 import com.smart.gestion_colis.repositories.ClientRepository;
+import com.smart.gestion_colis.repositories.LivreurRepository;
 import com.smart.gestion_colis.repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -20,11 +21,13 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final ClientRepository clientRepository;
+    private final LivreurRepository livreurRepository;
 
-    public UserService(UserRepository userRepository,PasswordEncoder passwordEncoder,ClientRepository clientRepository ) {
+    public UserService(UserRepository userRepository,LivreurRepository livreurRepository,PasswordEncoder passwordEncoder,ClientRepository clientRepository ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.clientRepository=clientRepository;
+        this.livreurRepository=livreurRepository;
 
     }
 
@@ -39,6 +42,7 @@ public class UserService {
         clientRepository.findAll().forEach(client::add);
         return client;
     }
+
 
 
 
@@ -121,15 +125,20 @@ public class UserService {
     public Client updateClientStatus(Long clientId,UpdateClientDto j) {
         Client client = (Client) userRepository.findById(clientId)
                 .orElseThrow(() -> new RuntimeException("Client not found with id: " + clientId));
-
         // Met à jour le statut actif du client
         client.setActive(j.getActive());
-
-
         // Sauvegarde les modifications
         return userRepository.save(client);
     }
 
+    public Livreur updateLivreurStatus(Long livreurId,UpdateLivreurDto j) {
+        Livreur livreur = (Livreur) userRepository.findById(livreurId)
+                .orElseThrow(() -> new RuntimeException("Livreur not found with id: " + livreurId));
+        // Met à jour le statut actif du livreur
+        livreur.setActive(j.getActive());
+        // Sauvegarde les modifications
+        return userRepository.save(livreur);
+    }
 
     public void deleteClient(Long clientId) {
         // Vérifier si le livreur existe avant de le supprimer
@@ -201,6 +210,7 @@ public class UserService {
         return userRepository.save(livreur);
     }
 
+
     public void deleteLivreur(Long livreurId) {
         // Vérifier si le livreur existe avant de le supprimer
         Livreur livreur = (Livreur) userRepository.findById(livreurId)
@@ -242,5 +252,18 @@ public class UserService {
 
         // Save the updated Livreur entity back to the repository
         return userRepository.save(livreur);
+    }
+
+    public List<Livreur> allLivreurs() {
+        List<Livreur> livreur = new ArrayList<>();
+        livreurRepository.findAll().forEach(livreur::add);
+        return livreur;
+    }
+
+
+
+    public Livreur findLivreurById(Integer id) {
+        return livreurRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Livreur not found with id: " + id));
     }
 }

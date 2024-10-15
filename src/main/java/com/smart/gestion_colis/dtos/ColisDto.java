@@ -10,7 +10,7 @@ public class ColisDto {
     private String adresseDestinataire;
     private Date dateExpedition;
     private Date dateLivraisonPrevue;
-    private Long itineraireId;  // ID pour l'itinéraire lié
+//    private Long itineraireId;  // ID pour l'itinéraire lié
     private Long livraisonId;    // ID pour la livraison liée
     private Long clientId;       // ID du client associé
     // On ne stocke pas directement MultipartFile ici, c'est géré dans le contrôleur
@@ -76,14 +76,14 @@ public class ColisDto {
     }
 
     // Getter et Setter pour itineraireId
-    public Long getItineraireId() {
-        return itineraireId;
-    }
-
-    public ColisDto setItineraireId(Long itineraireId) {
-        this.itineraireId = itineraireId;
-        return this;
-    }
+//    public Long getItineraireId() {
+//        return itineraireId;
+//    }
+//
+//    public ColisDto setItineraireId(Long itineraireId) {
+//        this.itineraireId = itineraireId;
+//        return this;
+//    }
 
     // Getter et Setter pour livraisonId
     public Long getLivraisonId() {
@@ -114,7 +114,7 @@ public class ColisDto {
                 ", adresseDestinataire='" + adresseDestinataire + '\'' +
                 ", dateExpedition=" + dateExpedition +
                 ", dateLivraisonPrevue=" + dateLivraisonPrevue +
-                ", itineraireId=" + itineraireId +
+//                ", itineraireId=" + itineraireId +
                 ", livraisonId=" + livraisonId +
                 ", clientId=" + clientId + // Ajout du clientId dans le toString
                 '}';

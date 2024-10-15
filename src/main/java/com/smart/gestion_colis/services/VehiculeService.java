@@ -105,4 +105,30 @@ public class VehiculeService {
     public List<Vehicule> getAllVehicules() {
         return vehiculeRepository.findAll();
     }
+
+    // Mise à jour d'un véhicule
+    public Vehicule updateVehicule(Long vehiculeId, VehiculeDto vehiculeDto) {
+        Vehicule vehicule = vehiculeRepository.findById(vehiculeId)
+                .orElseThrow(() -> new RuntimeException("Vehicule not found with id: " + vehiculeId));
+
+        vehicule.setMarque(vehiculeDto.getMarque());
+        vehicule.setModele(vehiculeDto.getModele());
+        vehicule.setImmatriculation(vehiculeDto.getImmatriculation());
+
+        return vehiculeRepository.save(vehicule);
+    }
+
+    // Récupérer un véhicule par ID
+    public Vehicule getVehiculeById(Long vehiculeId) {
+        return vehiculeRepository.findById(vehiculeId)
+                .orElseThrow(() -> new RuntimeException("Vehicule not found with id: " + vehiculeId));
+    }
+
+    // Récupérer tous les véhicules pour un livreur
+    public List<Vehicule> getVehiculesByLivreur(Integer livreurId) {
+        Livreur livreur = livreurRepository.findById(livreurId)
+                .orElseThrow(() -> new RuntimeException("Livreur not found with id: " + livreurId));
+
+        return vehiculeRepository.findByLivreur(livreur);
+    }
 }

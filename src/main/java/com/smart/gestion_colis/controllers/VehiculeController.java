@@ -60,4 +60,27 @@ public class VehiculeController {
         List<Vehicule> vehicules = vehiculeService.getAllVehicules();
         return ResponseEntity.ok(vehicules);
     }
+
+    // Endpoint pour mettre à jour un véhicule
+    @PutMapping("/{vehiculeId}")
+    public ResponseEntity<Vehicule> updateVehicule(
+            @PathVariable Long vehiculeId,
+            @RequestBody VehiculeDto vehiculeDto) {
+        Vehicule updatedVehicule = vehiculeService.updateVehicule(vehiculeId, vehiculeDto);
+        return ResponseEntity.ok(updatedVehicule);
+    }
+
+    // Endpoint pour récupérer un véhicule par ID
+    @GetMapping("/{vehiculeId}")
+    public ResponseEntity<Vehicule> getVehiculeById(@PathVariable Long vehiculeId) {
+        Vehicule vehicule = vehiculeService.getVehiculeById(vehiculeId);
+        return ResponseEntity.ok(vehicule);
+    }
+
+    // Récupérer tous les véhicules pour un livreur
+    @GetMapping("/livreur/{livreurId}")
+    public ResponseEntity<List<Vehicule>> getVehiculesByLivreur(@PathVariable Integer livreurId) {
+        List<Vehicule> vehicules = vehiculeService.getVehiculesByLivreur(livreurId);
+        return ResponseEntity.ok(vehicules);
+    }
 }

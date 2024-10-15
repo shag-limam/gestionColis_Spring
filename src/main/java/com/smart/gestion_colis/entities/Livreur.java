@@ -1,12 +1,66 @@
+//package com.smart.gestion_colis.entities;
+//
+//import com.fasterxml.jackson.annotation.JsonBackReference;
+//import jakarta.persistence.*;
+//import lombok.AllArgsConstructor;
+//import lombok.Getter;
+//import lombok.NoArgsConstructor;
+//import lombok.Setter;
+//import lombok.experimental.Accessors;
+//
+//import java.util.List;
+//
+//@AllArgsConstructor
+//@NoArgsConstructor
+//@Getter
+//@Setter
+//@Entity
+//@Accessors(chain = true)
+//@Table(name = "Livreur")
+//public class Livreur extends User {
+//
+//    @Column(nullable = false)
+//    private String address;
+//
+//    @Column(nullable = false)
+//    private String phoneNumber;
+//
+//    @Column(nullable = false)
+//    private String licence;
+//
+//    @Column(nullable = false)
+//    private boolean isAvailable = true;  // Par défaut, le livreur est disponible.
+//
+//    @OneToMany(mappedBy = "livreur", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonBackReference  // Côté inverse de la relation
+//    private List<Livraison> livraisons;
+//
+//    @OneToOne
+//    @JoinColumn(name = "vehicule_id", referencedColumnName = "id")
+//    private Vehicule vehicule;
+//
+//    @Override
+//    public String toString() {
+//        return "Livreur{" +
+//                "address='" + address + '\'' +
+//                ", phoneNumber='" + phoneNumber + '\'' +
+//                ", licence='" + licence + '\'' +
+//                ", isAvailable=" + isAvailable +
+//                ", fullName='" + getFullName() + '\'' +
+//                '}';
+//    }
+//}
 package com.smart.gestion_colis.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,37 +80,78 @@ public class Livreur extends User {
     @Column(nullable = false)
     private String licence;
 
+    @Column(nullable = false)
+    private boolean isAvailable = true;  // Par défaut, le livreur est disponible.
 
+    @JsonIgnore  // Ignore la relation inverse pour éviter les cycles
+    @OneToMany(mappedBy = "livreur", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Livraison> livraisons;
 
-    // The owning side of the relationship with Vehicule
-    @JsonManagedReference  // Gère la relation du côté propriétaire
     @OneToOne
     @JoinColumn(name = "vehicule_id", referencedColumnName = "id")
-    private Vehicule vehicule;  // This should match the 'mappedBy' in Vehicule
+    private Vehicule vehicule;
 
-    public String getAddress() {
-        return address;
+    @Override
+    public String toString() {
+        return "Livreur{" +
+                "address='" + address + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", licence='" + licence + '\'' +
+                ", isAvailable=" + isAvailable +
+                ", fullName='" + getFullName() + '\'' +
+                '}';
     }
-
-    public Livreur setAddress(String address) {
-        this.address = address;
-        return this;
-    }
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public Livreur setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-        return this;
-    }
-    public String getLicence() {
-        return licence;
-    }
-    public Livreur setLicence(String licence) {
-        this.licence = licence;
-        return this;
-    }
-
-
 }
+
+//package com.smart.gestion_colis.entities;
+//
+//import com.fasterxml.jackson.annotation.JsonManagedReference;
+//import jakarta.persistence.*;
+//import lombok.AllArgsConstructor;
+//import lombok.Getter;
+//import lombok.NoArgsConstructor;
+//import lombok.Setter;
+//import lombok.experimental.Accessors;
+//
+//import java.util.List;
+//
+//@AllArgsConstructor
+//@NoArgsConstructor
+//@Getter
+//@Setter
+//@Entity
+//@Accessors(chain = true)
+//@Table(name = "Livreur")
+//public class Livreur extends User {
+//
+//    @Column(nullable = false)
+//    private String address;
+//
+//    @Column(nullable = false)
+//    private String phoneNumber;
+//
+//    @Column(nullable = false)
+//    private String licence;
+//
+//    @Column(nullable = false)
+//    private boolean isAvailable = true;  // Par défaut, le livreur est disponible.
+//
+//    @OneToMany(mappedBy = "livreur", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonManagedReference  // Côté propriétaire de la relation
+//    private List<Livraison> livraisons;
+//
+//    @OneToOne
+//    @JoinColumn(name = "vehicule_id", referencedColumnName = "id")
+//    private Vehicule vehicule;
+//
+//    @Override
+//    public String toString() {
+//        return "Livreur{" +
+//                "address='" + address + '\'' +
+//                ", phoneNumber='" + phoneNumber + '\'' +
+//                ", licence='" + licence + '\'' +
+//                ", isAvailable=" + isAvailable +
+//                ", fullName='" + getFullName() + '\'' +
+//                '}';
+//    }
+//}
