@@ -1,5 +1,8 @@
 package com.smart.gestion_colis.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class VehiculeDto {
 
     private String marque;

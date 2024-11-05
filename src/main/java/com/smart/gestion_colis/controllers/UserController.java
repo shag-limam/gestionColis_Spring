@@ -45,8 +45,6 @@ public class UserController {
 
         return ResponseEntity.ok(clients);
     }
-
-
     @PostMapping("/signupClient")
     public ResponseEntity<Client> registerClient(
             @RequestPart("client") String registerClientDtoJson,
@@ -70,8 +68,6 @@ public class UserController {
             throw new RuntimeException("Failed to upload file", e); // Use RuntimeException for simplicity
         }
     }
-
-
     @PutMapping("/updateClient/{clientId}")
     public ResponseEntity<Client> updateClient(
             @PathVariable Long clientId,
@@ -214,32 +210,6 @@ public class UserController {
                     .body("Failed to delete client: " + e.getMessage());
         }
     }
-
-
-//    @PostMapping("/signupLivreur")
-//    public ResponseEntity<Livreur> registerLivreur(
-//            @RequestPart("livreur") String registerLivreurDtoJson,
-//            @RequestPart("photo") MultipartFile photo) {
-//        try {
-//            // Convert JSON string to RegisterLivreurDto object
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            RegisterLivreurDto registerLivreurDto = objectMapper.readValue(registerLivreurDtoJson, RegisterLivreurDto.class);
-//
-//            // Process the photo
-//            ImageData imageData = new ImageData();
-//            imageData.setName(photo.getOriginalFilename());
-//            imageData.setType(photo.getContentType());
-//            imageData.setImageData(photo.getBytes());
-//
-//            // Register Livreur
-//            Livreur registeredLivreur = userService.signupLivreur(registerLivreurDto, imageData);
-//
-//            return ResponseEntity.ok(registeredLivreur);
-//        } catch (IOException e) {
-//            throw new RuntimeException("Failed to upload file", e); // Use RuntimeException for simplicity
-//        }
-//    }
-
     @PostMapping("/signupLivreur")
     public ResponseEntity<Livreur> registerLivreur(
             @RequestPart("livreur") String registerLivreurDtoJson,

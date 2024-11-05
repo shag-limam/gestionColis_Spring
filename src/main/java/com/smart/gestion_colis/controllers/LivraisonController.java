@@ -1,6 +1,5 @@
 package com.smart.gestion_colis.controllers;
 
-import com.smart.gestion_colis.dtos.ItineraireDto;
 import com.smart.gestion_colis.dtos.LivraisonDto;
 import com.smart.gestion_colis.entities.Colis;
 import com.smart.gestion_colis.entities.Livraison;
@@ -91,6 +90,27 @@ public class LivraisonController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to delete livraison: " + e.getMessage());
+        }
+    }
+    // Récupérer les livraisons d'un livreur spécifique
+    @GetMapping("/livreur/{livreurId}")
+    public ResponseEntity<List<Livraison>> getLivraisonsByIdLivreur(@PathVariable Integer livreurId) {
+        try {
+            List<Livraison> livraisons = livraisonService.getLivraisonsByIdLivreur(livreurId);
+            return ResponseEntity.ok(livraisons);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    // Nouveau endpoint pour démarrer une livraison
+    @PutMapping("/demarrer/{livraisonId}")
+    public ResponseEntity<Livraison> demarrerLivraison(@PathVariable Integer livraisonId) {
+        try {
+            Livraison livraison = livraisonService.demarrerLivraison(livraisonId);
+            return ResponseEntity.ok(livraison);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 }

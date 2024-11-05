@@ -25,4 +25,11 @@ public class ImageData {
     @Lob
     @Column(name = "imagedata", length = 1000)
     private byte[] imageData;
+
+    // Ajout du constructeur avec les paramètres name, type, et imageData
+    public ImageData(String name, String type, byte[] imageData) {
+        this.name = name;
+        this.type = type;
+        this.imageData = imageData;
+    }
 }

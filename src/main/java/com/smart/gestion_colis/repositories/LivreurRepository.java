@@ -3,6 +3,7 @@ package com.smart.gestion_colis.repositories;
 import com.smart.gestion_colis.entities.Client;
 import com.smart.gestion_colis.entities.Colis;
 import com.smart.gestion_colis.entities.Livreur;
+import com.smart.gestion_colis.entities.Vehicule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -15,13 +16,13 @@ import java.util.Optional;
 public interface LivreurRepository extends CrudRepository<Livreur, Integer> {
 
     Optional<Livreur> findByEmail(String email);
+
+//    Optional<Vehicule> findByVehiculeId(Integer id);
+    Livreur findByVehiculeId(Integer vehiculeId);
     public List<Livreur> findAll();
 
-//    List<Livreur> findByIsAvailableTrue();
+    Optional<Livreur> findByVehicule(Vehicule vehicule);
 
-//    @Query("SELECT l FROM Livreur l WHERE l.isAvailable = true")
-//    @Query("SELECT l FROM public.livreur l WHERE l.is_available = true")
     List<Livreur> findByIsAvailableTrue();
 
 }
-//public interface LivreurRepository extends JpaRepository<Livreur, Long> {

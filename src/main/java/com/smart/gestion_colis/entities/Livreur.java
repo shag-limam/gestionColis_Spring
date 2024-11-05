@@ -91,6 +91,8 @@ public class Livreur extends User {
     @JoinColumn(name = "vehicule_id", referencedColumnName = "id")
     private Vehicule vehicule;
 
+
+
     @Override
     public String toString() {
         return "Livreur{" +

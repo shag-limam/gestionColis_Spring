@@ -5,21 +5,16 @@ import com.smart.gestion_colis.entities.*;
 import com.smart.gestion_colis.repositories.ClientRepository;
 import com.smart.gestion_colis.repositories.LivreurRepository;
 import com.smart.gestion_colis.repositories.UserRepository;
-
-import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
     private final ClientRepository clientRepository;
     private final LivreurRepository livreurRepository;
 
@@ -30,28 +25,20 @@ public class UserService {
         this.livreurRepository=livreurRepository;
 
     }
-
     public List<User> allUsers() {
         List<User> users = new ArrayList<>();
         userRepository.findAll().forEach(users::add);
         return users;
     }
-
     public List<Client> allClients() {
         List<Client> client = new ArrayList<>();
         clientRepository.findAll().forEach(client::add);
         return client;
     }
-
-
-
-
     public Client findClientById(Long id) {
         return clientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
     }
-
-
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
@@ -61,7 +48,6 @@ public class UserService {
     public void deleteUser(Integer userId) {
         userRepository.deleteById(userId);
     }
-
     public Client createClient(RegisterClientDto input) {
         var client = new Client();
 
@@ -74,7 +60,6 @@ public class UserService {
 
         return userRepository.save(client);
     }
-
     public Client signupClient(RegisterClientDto input, ImageData imageData) {
         var client = new Client();
 
@@ -88,8 +73,6 @@ public class UserService {
 
         return userRepository.save(client);
     }
-
-
     public Client updateClient(Long clientId, UpdateClientDto input, ImageData imageData) {
         // Retrieve existing Client entity from the database
         Client client = (Client) userRepository.findById(clientId)
@@ -120,8 +103,6 @@ public class UserService {
         // Save the updated Livreur entity back to the repository
         return userRepository.save(client);
     }
-
-
     public Client updateClientStatus(Long clientId,UpdateClientDto j) {
         Client client = (Client) userRepository.findById(clientId)
                 .orElseThrow(() -> new RuntimeException("Client not found with id: " + clientId));
@@ -130,7 +111,6 @@ public class UserService {
         // Sauvegarde les modifications
         return userRepository.save(client);
     }
-
     public Livreur updateLivreurStatus(Long livreurId,UpdateLivreurDto j) {
         Livreur livreur = (Livreur) userRepository.findById(livreurId)
                 .orElseThrow(() -> new RuntimeException("Livreur not found with id: " + livreurId));
@@ -139,12 +119,10 @@ public class UserService {
         // Sauvegarde les modifications
         return userRepository.save(livreur);
     }
-
     public void deleteClient(Long clientId) {
         // Vérifier si le livreur existe avant de le supprimer
         Client client = (Client) userRepository.findById(clientId)
                 .orElseThrow(() -> new RuntimeException("Client not found with id: " + clientId));
-
         // Supprimer le livreur de la base de données
         userRepository.delete(client);
     }
@@ -160,8 +138,6 @@ public class UserService {
 
         return userRepository.save(admin);
     }
-
-
     public Admin updateAdmin(Long adminId, UpdateAdminDto input, ImageData imageData) {
         // Retrieve existing Client entity from the database
         Admin admin = (Admin) userRepository.findById(adminId)
@@ -186,7 +162,6 @@ public class UserService {
         // Save the updated Admin entity back to the repository
         return userRepository.save(admin);
     }
-
     public void deleteAdmin(Long adminId) {
         // Vérifier si le livreur existe avant de le supprimer
         Admin admin = (Admin) userRepository.findById(adminId)
@@ -194,7 +169,6 @@ public class UserService {
         // Supprimer le livreur de la base de données
         userRepository.delete(admin);
     }
-
     public Livreur signupLivreur(RegisterLivreurDto input, ImageData imageData) {
         var livreur = new Livreur();
 
@@ -209,8 +183,6 @@ public class UserService {
 
         return userRepository.save(livreur);
     }
-
-
     public void deleteLivreur(Long livreurId) {
         // Vérifier si le livreur existe avant de le supprimer
         Livreur livreur = (Livreur) userRepository.findById(livreurId)
@@ -219,7 +191,6 @@ public class UserService {
         // Supprimer le livreur de la base de données
         userRepository.delete(livreur);
     }
-
     public Livreur updateLivreur(Long livreurId, UpdateLivreurDto input, ImageData imageData) {
         // Retrieve existing Livreur entity from the database
         Livreur livreur = (Livreur) userRepository.findById(livreurId)
@@ -253,15 +224,11 @@ public class UserService {
         // Save the updated Livreur entity back to the repository
         return userRepository.save(livreur);
     }
-
     public List<Livreur> allLivreurs() {
         List<Livreur> livreur = new ArrayList<>();
         livreurRepository.findAll().forEach(livreur::add);
         return livreur;
     }
-
-
-
     public Livreur findLivreurById(Integer id) {
         return livreurRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Livreur not found with id: " + id));
