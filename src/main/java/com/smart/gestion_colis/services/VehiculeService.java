@@ -321,6 +321,7 @@ public class VehiculeService {
         Vehicule vehicule = vehiculeRepository.findById(vehiculeId)
                 .orElseThrow(() -> new RuntimeException("Vehicule not found with id: " + vehiculeId));
 
+        // Supprimer le motif de rejet s'il existe
         if (vehicule.getMotif() != null) {
             Motif motif = vehicule.getMotif();
             vehicule.setMotif(null);
@@ -328,17 +329,47 @@ public class VehiculeService {
             motifRepository.delete(motif);
         }
 
+        // Mettre à jour l'état du véhicule comme approuvé
         vehicule.setApprouve(true);
         vehicule.setRejected(false);
+        Vehicule approvedVehicule = vehiculeRepository.save(vehicule);
 
-        return vehiculeRepository.save(vehicule);
+        // Récupérer le livreur associé au véhicule
+        Livreur livreur = vehicule.getLivreur();
+        if (livreur == null) {
+            throw new RuntimeException("Livreur not found for the approved vehicle with id: " + vehiculeId);
+        }
+
+        // Créer et envoyer une notification au livreur
+        String message = "Votre véhicule a été approuvé par l'administrateur.";
+        notificationService.createNotificationForLivreur(livreur, approvedVehicule, message);
+
+        return approvedVehicule;
     }
+
+//    public Vehicule approveVehicule(Integer vehiculeId) {
+//        Vehicule vehicule = vehiculeRepository.findById(vehiculeId)
+//                .orElseThrow(() -> new RuntimeException("Vehicule not found with id: " + vehiculeId));
+//
+//        if (vehicule.getMotif() != null) {
+//            Motif motif = vehicule.getMotif();
+//            vehicule.setMotif(null);
+//            vehiculeRepository.save(vehicule);
+//            motifRepository.delete(motif);
+//        }
+//
+//        vehicule.setApprouve(true);
+//        vehicule.setRejected(false);
+//
+//        return vehiculeRepository.save(vehicule);
+//    }
 
     // Rejeter un véhicule avec un motif
     public Vehicule rejectVehicule(Integer vehiculeId, String motifDescription) {
         Vehicule vehicule = vehiculeRepository.findById(vehiculeId)
                 .orElseThrow(() -> new RuntimeException("Vehicule not found with id: " + vehiculeId));
 
+        // Gérer le motif de rejet
         Motif motif;
         if (vehicule.getMotif() != null) {
             motif = vehicule.getMotif();
@@ -350,12 +381,48 @@ public class VehiculeService {
             vehicule.setMotif(motif);
         }
 
+        // Mettre à jour l'état du véhicule
         vehicule.setApprouve(false);
         vehicule.setRejected(true);
 
+        // Sauvegarder le motif et le véhicule
         motifRepository.save(motif);
-        return vehiculeRepository.save(vehicule);
+        Vehicule updatedVehicule = vehiculeRepository.save(vehicule);
+
+        // Récupérer le livreur associé au véhicule
+        Livreur livreur = vehicule.getLivreur();
+        if (livreur == null) {
+            throw new RuntimeException("Livreur not found for the rejected vehicle with id: " + vehiculeId);
+        }
+
+        // Créer et envoyer une notification au livreur
+        String message = "Votre véhicule a été rejeté par l'administrateur.";
+        notificationService.createNotificationForLivreur(livreur, updatedVehicule, message);
+
+        return updatedVehicule;
     }
+
+//    public Vehicule rejectVehicule(Integer vehiculeId, String motifDescription) {
+//        Vehicule vehicule = vehiculeRepository.findById(vehiculeId)
+//                .orElseThrow(() -> new RuntimeException("Vehicule not found with id: " + vehiculeId));
+//
+//        Motif motif;
+//        if (vehicule.getMotif() != null) {
+//            motif = vehicule.getMotif();
+//            motif.setDescription(motifDescription);
+//        } else {
+//            motif = new Motif();
+//            motif.setDescription(motifDescription);
+//            motif.setVehicule(vehicule);
+//            vehicule.setMotif(motif);
+//        }
+//
+//        vehicule.setApprouve(false);
+//        vehicule.setRejected(true);
+//
+//        motifRepository.save(motif);
+//        return vehiculeRepository.save(vehicule);
+//    }
 
     // Récupérer tous les véhicules pour l'admin
     public List<Vehicule> getAllVehicules() {
@@ -363,29 +430,71 @@ public class VehiculeService {
     }
 
     // Mise à jour d'un véhicule
+    @Transactional
     public Vehicule updateVehicule(Integer vehiculeId, VehiculeDto vehiculeDto, ImageData assuranceImage, ImageData carteGriseImage, List<ImageData> photos) {
         Vehicule vehicule = vehiculeRepository.findById(vehiculeId)
                 .orElseThrow(() -> new RuntimeException("Vehicule not found with id: " + vehiculeId));
 
+        // Mise à jour des informations du véhicule
         vehicule.setMarque(vehiculeDto.getMarque());
         vehicule.setModele(vehiculeDto.getModele());
         vehicule.setImmatriculation(vehiculeDto.getImmatriculation());
 
-        // Mise à jour des images si fournies
+        // Mise à jour des images si elles sont fournies
         if (assuranceImage != null) {
             vehicule.setAssurance(assuranceImage);
         }
         if (carteGriseImage != null) {
             vehicule.setCarteGrise(carteGriseImage);
         }
+
+        // Mise à jour des photos sans remplacer la collection entière
         if (photos != null && !photos.isEmpty()) {
-            vehicule.setPhotos(photos);
+            vehicule.getPhotos().clear(); // Vider la liste existante
+            vehicule.getPhotos().addAll(photos); // Ajouter les nouvelles photos
         }
 
+        // Désapprouver le véhicule jusqu'à la prochaine vérification
         vehicule.setApprouve(false);
 
-        return vehiculeRepository.save(vehicule);
+        // Sauvegarde du véhicule
+        Vehicule updatedVehicule = vehiculeRepository.save(vehicule);
+
+        // Récupération de l'administrateur
+        Admin admin = StreamSupport.stream(adminRepository.findAll().spliterator(), false)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        // Création et envoi d'une notification à l'admin
+        String message = "Le livreur " + vehicule.getLivreur().getFullName() + " a mis à jour les informations d'un véhicule.";
+        notificationService.createNotificationForAdmin(admin, updatedVehicule, message);
+
+        return updatedVehicule;
     }
+
+//    public Vehicule updateVehicule(Integer vehiculeId, VehiculeDto vehiculeDto, ImageData assuranceImage, ImageData carteGriseImage, List<ImageData> photos) {
+//        Vehicule vehicule = vehiculeRepository.findById(vehiculeId)
+//                .orElseThrow(() -> new RuntimeException("Vehicule not found with id: " + vehiculeId));
+//
+//        vehicule.setMarque(vehiculeDto.getMarque());
+//        vehicule.setModele(vehiculeDto.getModele());
+//        vehicule.setImmatriculation(vehiculeDto.getImmatriculation());
+//
+//        // Mise à jour des images si fournies
+//        if (assuranceImage != null) {
+//            vehicule.setAssurance(assuranceImage);
+//        }
+//        if (carteGriseImage != null) {
+//            vehicule.setCarteGrise(carteGriseImage);
+//        }
+//        if (photos != null && !photos.isEmpty()) {
+//            vehicule.setPhotos(photos);
+//        }
+//
+//        vehicule.setApprouve(false);
+//
+//        return vehiculeRepository.save(vehicule);
+//    }
 
     // Récupérer un véhicule par ID
     public Vehicule getVehiculeById(Integer vehiculeId) {

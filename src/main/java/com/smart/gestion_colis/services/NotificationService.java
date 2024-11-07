@@ -24,6 +24,12 @@ public class NotificationService {
         messagingTemplate.convertAndSend("/topic/livreur/" + livreur.getId(), notification);
     }
 
+    public void createNotificationForLivreur(Livreur livreur, Vehicule vehicule, String message) {
+        Notification notification = new Notification(message, livreur, vehicule);
+        notificationRepository.save(notification);
+        messagingTemplate.convertAndSend("/topic/livreur/" + livreur.getId(), notification);
+    }
+
     public void createNotificationForClient(Client client, String message) {
         Notification notification = new Notification(message, client);
         notificationRepository.save(notification);

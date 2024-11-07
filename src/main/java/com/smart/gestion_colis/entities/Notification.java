@@ -72,6 +72,12 @@ public class Notification {
         this.livraison = livraison;
     }
 
+    public Notification(String message, Livreur livreur, Vehicule vehicule) {
+        this.message = message;
+        this.livreur = livreur;
+        this.vehicule = vehicule;
+    }
+
 
     public Notification(String message, Client client) {
         this.message = message;
