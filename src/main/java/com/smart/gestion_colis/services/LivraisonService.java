@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.StreamSupport;
+
 @Slf4j
 @Service
 public class LivraisonService {
@@ -18,6 +20,8 @@ public class LivraisonService {
     private final ItineraireRepository itineraireRepository;
 
     private final NotificationRepository notificationRepository;
+    private final AdminRepository adminRepository;
+
     private final NotificationService notificationService; // Injection du NotificationService
 
     // Constructeur avec injection des dépendances
@@ -26,12 +30,14 @@ public class LivraisonService {
                             LivreurRepository livreurRepository,
                             ItineraireRepository itineraireRepository,
                             NotificationRepository notificationRepository,
+                            AdminRepository adminRepository,
                             NotificationService notificationService) {
         this.livraisonRepository = livraisonRepository;
         this.colisRepository = colisRepository;
         this.livreurRepository = livreurRepository;
         this.itineraireRepository = itineraireRepository;
         this.notificationRepository = notificationRepository;
+        this.adminRepository=adminRepository;
         this.notificationService = notificationService; // Initialisation du NotificationService
     }
     /**
@@ -101,23 +107,47 @@ public class LivraisonService {
 
         livraison.setStatut(statut);
 
+        Admin admin = StreamSupport.stream(adminRepository.findAll().spliterator(), false)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+
         if ("Livré".equalsIgnoreCase(statut)) {
             livraison.setDateLivraisonReelle(new Date());
+
             // Rendre le livreur et le colis disponibles après la livraison
             livraison.getLivreur().setAvailable(true);
             livraison.getColis().setAvailable(false);
             livreurRepository.save(livraison.getLivreur());
             colisRepository.save(livraison.getColis());
+
+
+
+            // Envoyer une notification au client et à l'admin lorsque le statut est mis à jour à "Livré"
+            notificationService.createNotificationForClient(
+                    livraison.getColis().getClient(), livraison, "Votre colis a été livré avec succès.");
+
+            notificationService.createNotificationForAdmin(
+                    admin, livraison.getLivreur().getVehicule(), "Le colis a été livré avec succès par le livreur " + livraison.getLivreur().getFullName());
+
         } else if ("Annulé".equalsIgnoreCase(statut)) {
             livraison.annulerLivraison();
             livraison.getLivreur().setAvailable(true);
             livraison.getColis().setAvailable(true);
             livreurRepository.save(livraison.getLivreur());
             colisRepository.save(livraison.getColis());
+
+            // Envoyer une notification à l'admin lorsque le statut est mis à jour à "Annulé"
+            notificationService.createNotificationForAdmin(
+                    admin, livraison.getLivreur().getVehicule(), "La livraison a été annulée pour le colis " + livraison.getColis().getDescription());
+
         } else if ("En cours".equalsIgnoreCase(statut)) {
             // Envoyer une notification au client lorsque le statut est mis à jour à "En cours"
-            notificationService.createNotificationForClient(livraison.getColis().getClient(),
-                    "Votre colis est en cours de livraison. Veuillez vérifier les détails.");
+            notificationService.createNotificationForClient(
+                    livraison.getColis().getClient(), livraison, "Votre colis est en cours de livraison. Veuillez vérifier les détails.");
+
+            // Envoyer une notification à l'admin lorsque le statut est mis à jour à "En cours"
+            notificationService.createNotificationForAdmin(
+                    admin, livraison.getLivreur().getVehicule(), "Le livreur " + livraison.getLivreur().getFullName() + " a accepté la livraison du colis " + livraison.getColis().getDescription());
 
             livraison.getLivreur().setAvailable(false);
             livraison.getColis().setAvailable(false);
@@ -127,6 +157,39 @@ public class LivraisonService {
 
         return livraisonRepository.save(livraison);
     }
+
+//    public Livraison updateLivraisonStatut(Integer livraisonId, String statut) {
+//        Livraison livraison = livraisonRepository.findById(livraisonId)
+//                .orElseThrow(() -> new RuntimeException("Livraison not found with id: " + livraisonId));
+//
+//        livraison.setStatut(statut);
+//
+//        if ("Livré".equalsIgnoreCase(statut)) {
+//            livraison.setDateLivraisonReelle(new Date());
+//            // Rendre le livreur et le colis disponibles après la livraison
+//            livraison.getLivreur().setAvailable(true);
+//            livraison.getColis().setAvailable(false);
+//            livreurRepository.save(livraison.getLivreur());
+//            colisRepository.save(livraison.getColis());
+//        } else if ("Annulé".equalsIgnoreCase(statut)) {
+//            livraison.annulerLivraison();
+//            livraison.getLivreur().setAvailable(true);
+//            livraison.getColis().setAvailable(true);
+//            livreurRepository.save(livraison.getLivreur());
+//            colisRepository.save(livraison.getColis());
+//        } else if ("En cours".equalsIgnoreCase(statut)) {
+//            // Envoyer une notification au client lorsque le statut est mis à jour à "En cours"
+//            notificationService.createNotificationForClient(livraison.getColis().getClient(),
+//                    "Votre colis est en cours de livraison. Veuillez vérifier les détails.");
+//
+//            livraison.getLivreur().setAvailable(false);
+//            livraison.getColis().setAvailable(false);
+//            livreurRepository.save(livraison.getLivreur());
+//            colisRepository.save(livraison.getColis());
+//        }
+//
+//        return livraisonRepository.save(livraison);
+//    }
 
 //    @Transactional
 //    public Livraison updateLivraisonStatut(Integer livraisonId, String statut) {
