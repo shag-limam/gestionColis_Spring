@@ -17,6 +17,7 @@ public class LivraisonService {
     private final LivraisonRepository livraisonRepository;
     private final ColisRepository colisRepository;
     private final LivreurRepository livreurRepository;
+    private final ClientRepository clientRepository;
     private final ItineraireRepository itineraireRepository;
 
     private final NotificationRepository notificationRepository;
@@ -31,11 +32,13 @@ public class LivraisonService {
                             ItineraireRepository itineraireRepository,
                             NotificationRepository notificationRepository,
                             AdminRepository adminRepository,
+                            ClientRepository clientRepository,
                             NotificationService notificationService) {
         this.livraisonRepository = livraisonRepository;
         this.colisRepository = colisRepository;
         this.livreurRepository = livreurRepository;
         this.itineraireRepository = itineraireRepository;
+        this.clientRepository = clientRepository;
         this.notificationRepository = notificationRepository;
         this.adminRepository=adminRepository;
         this.notificationService = notificationService; // Initialisation du NotificationService
@@ -127,7 +130,7 @@ public class LivraisonService {
                     livraison.getColis().getClient(), livraison, "Votre colis a été livré avec succès.");
 
             notificationService.createNotificationForAdmin(
-                    admin, livraison.getLivreur().getVehicule(), "Le colis a été livré avec succès par le livreur " + livraison.getLivreur().getFullName());
+                    admin,livraison, "Le colis a été livré avec succès par le livreur " + livraison.getLivreur().getFullName());
 
         } else if ("Annulé".equalsIgnoreCase(statut)) {
             livraison.annulerLivraison();
@@ -138,7 +141,7 @@ public class LivraisonService {
 
             // Envoyer une notification à l'admin lorsque le statut est mis à jour à "Annulé"
             notificationService.createNotificationForAdmin(
-                    admin, livraison.getLivreur().getVehicule(), "La livraison a été annulée pour le colis " + livraison.getColis().getDescription());
+                    admin, livraison, "La livraison a été annulée pour le colis " + livraison.getColis().getDescription());
 
         } else if ("En cours".equalsIgnoreCase(statut)) {
             // Envoyer une notification au client lorsque le statut est mis à jour à "En cours"
@@ -147,7 +150,7 @@ public class LivraisonService {
 
             // Envoyer une notification à l'admin lorsque le statut est mis à jour à "En cours"
             notificationService.createNotificationForAdmin(
-                    admin, livraison.getLivreur().getVehicule(), "Le livreur " + livraison.getLivreur().getFullName() + " a accepté la livraison du colis " + livraison.getColis().getDescription());
+                    admin, livraison, "Le livreur " + livraison.getLivreur().getFullName() + " a accepté la livraison du colis " + livraison.getColis().getDescription());
 
             livraison.getLivreur().setAvailable(false);
             livraison.getColis().setAvailable(false);
@@ -447,6 +450,17 @@ public class LivraisonService {
 
         return livraisonRepository.findByLivreur(livreur);
     }
+
+    @Transactional
+    public List<Livraison> getLivraisonsByIdClient(Integer clientId) {
+        // Rechercher le client par son ID
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new RuntimeException("Client not found with id: " + clientId));
+
+        // Rechercher toutes les livraisons associées aux colis de ce client
+        return livraisonRepository.findByColisClient(client);
+    }
+
 
     @Transactional
     public Livraison demarrerLivraison(Integer livraisonId) {

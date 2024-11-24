@@ -31,16 +31,16 @@ public class NotificationService {
     }
 
     public void createNotificationForClient(Client client, Livraison livraison, String message) {
-        Notification notification = new Notification(message, client);
+        Notification notification = new Notification(message, client,livraison);
         notificationRepository.save(notification);
         messagingTemplate.convertAndSend("/topic/client/" + client.getId(), notification);
     }
 
-    public void createNotificationForClient(Client client, Colis colis, String message) {
-        Notification notification = new Notification(message, client);
-        notificationRepository.save(notification);
-        messagingTemplate.convertAndSend("/topic/client/" + client.getId(), notification);
-    }
+//    public void createNotificationForClient(Client client, Colis colis, String message) {
+//        Notification notification = new Notification(message, client,colis);
+//        notificationRepository.save(notification);
+//        messagingTemplate.convertAndSend("/topic/client/" + client.getId(), notification);
+//    }
 
     public void createNotificationForAdmin(Admin admin, Vehicule vehicule, String message) {
         Notification notification = new Notification(message, admin, vehicule);
@@ -50,7 +50,7 @@ public class NotificationService {
 
     // Nouvelle méthode pour envoyer une notification à l'admin pour une livraison
     public void createNotificationForAdmin(Admin admin, Livraison livraison, String message) {
-        Notification notification = new Notification(message, admin);
+        Notification notification = new Notification(message, admin,livraison);
         notification.setLivraison(livraison);
         notificationRepository.save(notification);
         messagingTemplate.convertAndSend("/topic/admin", notification);

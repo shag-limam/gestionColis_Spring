@@ -102,6 +102,16 @@ public class LivraisonController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
+    // Récupérer les livraisons d'un client spécifique
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<List<Livraison>> getLivraisonsByIdClient(@PathVariable Integer clientId) {
+        try {
+            List<Livraison> livraisons = livraisonService.getLivraisonsByIdClient(clientId);
+            return ResponseEntity.ok(livraisons);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
 
     // Nouveau endpoint pour démarrer une livraison
     @PutMapping("/demarrer/{livraisonId}")

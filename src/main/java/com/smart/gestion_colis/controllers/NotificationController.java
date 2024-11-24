@@ -57,9 +57,13 @@
 package com.smart.gestion_colis.controllers;
 
 import com.smart.gestion_colis.entities.Admin;
+import com.smart.gestion_colis.entities.Colis;
+import com.smart.gestion_colis.entities.Livraison;
 import com.smart.gestion_colis.entities.Notification;
 import com.smart.gestion_colis.repositories.AdminRepository;
+import com.smart.gestion_colis.repositories.ColisRepository;
 import com.smart.gestion_colis.repositories.NotificationRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -77,11 +81,13 @@ import java.util.stream.StreamSupport;
 public class NotificationController {
 
     private final NotificationRepository notificationRepository;
+    private final ColisRepository colisRepository;
     private final AdminRepository adminRepository;
 
-    public NotificationController(NotificationRepository notificationRepository, AdminRepository adminRepository) {
+    public NotificationController(NotificationRepository notificationRepository,ColisRepository colisRepository, AdminRepository adminRepository) {
         this.notificationRepository = notificationRepository;
         this.adminRepository = adminRepository;
+        this.colisRepository= colisRepository;
     }
 
     @GetMapping("/livreur/{livreurId}")
@@ -105,6 +111,12 @@ public class NotificationController {
         List<Notification> notifications = notificationRepository.findByClientId(clientId);
         return ResponseEntity.ok(notifications);
     }
+
+//    @GetMapping("/client/{clientId}")
+//    public ResponseEntity<List<Notification>> getNotificationsForClient(@PathVariable Integer clientId) {
+//        List<Notification> notifications = notificationRepository.findByClientId(clientId);
+//        return ResponseEntity.ok(notifications);
+//    }
 
     @PutMapping("/markAsRead/{notificationId}")
     public ResponseEntity<Void> markNotificationAsRead(@PathVariable Integer notificationId) {

@@ -11,6 +11,7 @@ public interface ColisRepository extends CrudRepository<Colis, Integer> {
 
     // Trouver un colis par ID
     Optional<Colis> findById(Integer id);
+    List<Colis> findByClientId(Integer clientId);
 
     // Récupérer tous les colis
     List<Colis> findAll();

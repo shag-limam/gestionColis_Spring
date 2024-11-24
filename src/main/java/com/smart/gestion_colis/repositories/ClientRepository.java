@@ -14,5 +14,7 @@ public interface ClientRepository extends CrudRepository<Client, Integer> {
     Optional<Client> findByEmail(String email);
     Optional<Client> findById(Long email);
 
+
+
 //    List<Client> findAll();
 }

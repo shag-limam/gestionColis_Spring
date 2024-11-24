@@ -56,6 +56,7 @@ public class Notification {
     @JoinColumn(name = "livraison_id", referencedColumnName = "id")
     private Livraison livraison;
 
+
     @ManyToOne
     @JoinColumn(name = "vehicule_id", referencedColumnName = "id")
     private Vehicule vehicule;
@@ -64,6 +65,11 @@ public class Notification {
         this.message = message;
         this.admin = admin;
         this.vehicule = vehicule;
+    }
+    public Notification(String message, Admin admin, Livraison livraison) {
+        this.message = message;
+        this.admin = admin;
+        this.livraison = livraison;
     }
 
     public Notification(String message, Livreur livreur, Livraison livraison) {
@@ -79,10 +85,18 @@ public class Notification {
     }
 
 
-    public Notification(String message, Client client) {
+    //message, client,livraison
+    public Notification(String message, Client client,Livraison livraison) {
         this.message = message;
         this.client = client;
+        this.livraison = livraison;
     }
+
+//    public Notification(String message, Client client,Colis colis) {
+//        this.message = message;
+//        this.client = client;
+//        this.colis = colis;
+//    }
 
     public Notification(String message, Admin admin) {
         this.message = message;

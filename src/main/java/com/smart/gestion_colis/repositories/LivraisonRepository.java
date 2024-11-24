@@ -1,5 +1,6 @@
 package com.smart.gestion_colis.repositories;
 
+import com.smart.gestion_colis.entities.Client;
 import com.smart.gestion_colis.entities.Colis;
 import com.smart.gestion_colis.entities.Livraison;
 import com.smart.gestion_colis.entities.Livreur;
@@ -15,4 +16,7 @@ public interface LivraisonRepository extends CrudRepository<Livraison, Integer> 
     List<Livraison> findByColis(Colis colis);
     // Trouver les livraisons par livreur
     List<Livraison> findByLivreur(Livreur livreur);
+
+    List<Livraison> findByColisClient(Client client);
+
 }
