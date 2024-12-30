@@ -11,7 +11,9 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
 
     List<Notification> findByLivreurId(Integer livreurId);
 
-    List<Notification> findByClientId(Integer clientId);
+    List<Notification> findByLivreurIdOrderByCreatedAtDesc(Integer livreurId);
+
+    List<Notification> findByClientIdOrderByCreatedAtDesc(Integer clientId);
 
     List<Notification> findByLivraisonId(Integer livraisonId);
 

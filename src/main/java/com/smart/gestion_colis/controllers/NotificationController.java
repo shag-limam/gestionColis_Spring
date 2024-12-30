@@ -92,7 +92,7 @@ public class NotificationController {
 
     @GetMapping("/livreur/{livreurId}")
     public ResponseEntity<List<Notification>> getNotificationsForLivreur(@PathVariable Integer livreurId) {
-        List<Notification> notifications = notificationRepository.findByLivreurId(livreurId);
+        List<Notification> notifications = notificationRepository.findByLivreurIdOrderByCreatedAtDesc(livreurId);
         return ResponseEntity.ok(notifications);
     }
 
@@ -108,15 +108,10 @@ public class NotificationController {
 
     @GetMapping("/client/{clientId}")
     public ResponseEntity<List<Notification>> getNotificationsForClient(@PathVariable Integer clientId) {
-        List<Notification> notifications = notificationRepository.findByClientId(clientId);
+        List<Notification> notifications = notificationRepository.findByClientIdOrderByCreatedAtDesc(clientId);
         return ResponseEntity.ok(notifications);
     }
 
-//    @GetMapping("/client/{clientId}")
-//    public ResponseEntity<List<Notification>> getNotificationsForClient(@PathVariable Integer clientId) {
-//        List<Notification> notifications = notificationRepository.findByClientId(clientId);
-//        return ResponseEntity.ok(notifications);
-//    }
 
     @PutMapping("/markAsRead/{notificationId}")
     public ResponseEntity<Void> markNotificationAsRead(@PathVariable Integer notificationId) {
@@ -129,37 +124,3 @@ public class NotificationController {
 
 
 }
-//    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-//    public SseEmitter streamNotifications() {
-//        SseEmitter emitter = new SseEmitter();
-//        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-//
-//        executor.scheduleAtFixedRate(() -> {
-//            try {
-//                List<Notification> notifications = notificationRepository.findAll();
-//                emitter.send(SseEmitter.event().name("notifications").data(notifications));
-//            } catch (IOException e) {
-//                emitter.completeWithError(e);
-//                executor.shutdown();
-//            }
-//        }, 0, 5, TimeUnit.SECONDS); // Délai initial 0s, exécution toutes les 5s
-//
-//        return emitter;
-//    }
-//    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-//    public SseEmitter streamNotifications() {
-//        SseEmitter emitter = new SseEmitter();
-//        new Thread(() -> {
-//            try {
-//                // Exemple de logique pour envoyer des notifications périodiques
-//                while (true) {
-//                    List<Notification> notifications = notificationRepository.findAll();
-//                    emitter.send(notifications, MediaType.APPLICATION_JSON);
-//                    Thread.sleep(5000); // Envoyer les notifications toutes les 5 secondes
-//                }
-//            } catch (IOException | InterruptedException e) {
-//                emitter.completeWithError(e);
-//            }
-//        }).start();
-//        return emitter;
-//    }
