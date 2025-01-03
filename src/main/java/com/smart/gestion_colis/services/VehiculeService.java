@@ -107,22 +107,6 @@ public class VehiculeService {
         return approvedVehicule;
     }
 
-//    public Vehicule approveVehicule(Integer vehiculeId) {
-//        Vehicule vehicule = vehiculeRepository.findById(vehiculeId)
-//                .orElseThrow(() -> new RuntimeException("Vehicule not found with id: " + vehiculeId));
-//
-//        if (vehicule.getMotif() != null) {
-//            Motif motif = vehicule.getMotif();
-//            vehicule.setMotif(null);
-//            vehiculeRepository.save(vehicule);
-//            motifRepository.delete(motif);
-//        }
-//
-//        vehicule.setApprouve(true);
-//        vehicule.setRejected(false);
-//
-//        return vehiculeRepository.save(vehicule);
-//    }
 
     // Rejeter un véhicule avec un motif
     public Vehicule rejectVehicule(Integer vehiculeId, String motifDescription) {
@@ -162,32 +146,21 @@ public class VehiculeService {
         return updatedVehicule;
     }
 
-//    public Vehicule rejectVehicule(Integer vehiculeId, String motifDescription) {
-//        Vehicule vehicule = vehiculeRepository.findById(vehiculeId)
-//                .orElseThrow(() -> new RuntimeException("Vehicule not found with id: " + vehiculeId));
-//
-//        Motif motif;
-//        if (vehicule.getMotif() != null) {
-//            motif = vehicule.getMotif();
-//            motif.setDescription(motifDescription);
-//        } else {
-//            motif = new Motif();
-//            motif.setDescription(motifDescription);
-//            motif.setVehicule(vehicule);
-//            vehicule.setMotif(motif);
-//        }
-//
-//        vehicule.setApprouve(false);
-//        vehicule.setRejected(true);
-//
-//        motifRepository.save(motif);
-//        return vehiculeRepository.save(vehicule);
-//    }
+
 
     // Récupérer tous les véhicules pour l'admin
     public List<Vehicule> getAllVehicules() {
         return vehiculeRepository.findAll();
     }
+
+    public long getTotalVehiculesApprouves() {
+        return vehiculeRepository.countByApprouveTrue();
+    }
+
+    public long countRejectedVehicules() {
+        return vehiculeRepository.countByRejectedTrue();
+    }
+
 
     // Mise à jour d'un véhicule
     @Transactional
@@ -232,29 +205,6 @@ public class VehiculeService {
         return updatedVehicule;
     }
 
-//    public Vehicule updateVehicule(Integer vehiculeId, VehiculeDto vehiculeDto, ImageData assuranceImage, ImageData carteGriseImage, List<ImageData> photos) {
-//        Vehicule vehicule = vehiculeRepository.findById(vehiculeId)
-//                .orElseThrow(() -> new RuntimeException("Vehicule not found with id: " + vehiculeId));
-//
-//        vehicule.setMarque(vehiculeDto.getMarque());
-//        vehicule.setModele(vehiculeDto.getModele());
-//        vehicule.setImmatriculation(vehiculeDto.getImmatriculation());
-//
-//        // Mise à jour des images si fournies
-//        if (assuranceImage != null) {
-//            vehicule.setAssurance(assuranceImage);
-//        }
-//        if (carteGriseImage != null) {
-//            vehicule.setCarteGrise(carteGriseImage);
-//        }
-//        if (photos != null && !photos.isEmpty()) {
-//            vehicule.setPhotos(photos);
-//        }
-//
-//        vehicule.setApprouve(false);
-//
-//        return vehiculeRepository.save(vehicule);
-//    }
 
     // Récupérer un véhicule par ID
     public Vehicule getVehiculeById(Integer vehiculeId) {
