@@ -56,8 +56,6 @@ public class Colis {
     @OneToOne(mappedBy = "colis", cascade = CascadeType.ALL)
     private Livraison livraison;
 
-
-
     @Column(nullable = false, unique = true)
     private String referenceSuivi;
 
